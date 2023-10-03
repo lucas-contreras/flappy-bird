@@ -1,0 +1,101 @@
+[gd_scene load_steps=15 format=3 uid="uid://dy3r3ygvhb2ra"]
+
+[ext_resource type="Script" path="res://game.gd" id="1_0c1x3"]
+[ext_resource type="PackedScene" uid="uid://j15pbtlxk0ko" path="res://player.tscn" id="1_mb3uu"]
+[ext_resource type="Script" path="res://ParallaxBackground.gd" id="2_cirmf"]
+[ext_resource type="Texture2D" uid="uid://bj1o846f2ewft" path="res://flappy-bird-assets/sprites/background-night.png" id="2_g3ju5"]
+[ext_resource type="Texture2D" uid="uid://bp8ylueanynyk" path="res://flappy-bird-assets/sprites/base.png" id="3_4suwq"]
+[ext_resource type="FontFile" uid="uid://npefoxuc8g1y" path="res://flappy-bird-assets/Flappy-Bird.ttf" id="6_kc0c0"]
+[ext_resource type="Texture2D" uid="uid://bn83we6gmhhvu" path="res://flappy-bird-assets/sprites/message.png" id="7_fq523"]
+[ext_resource type="Script" path="res://Message.gd" id="8_3s13p"]
+[ext_resource type="Texture2D" uid="uid://de3hegqvsvx7t" path="res://flappy-bird-assets/sprites/gameover.png" id="9_ubj1o"]
+[ext_resource type="AudioStream" uid="uid://csd8r0mbcphqk" path="res://flappy-bird-assets/audio/hit.wav" id="10_jwc0u"]
+[ext_resource type="AudioStream" uid="uid://ceq0iigqcff4o" path="res://flappy-bird-assets/audio/point.wav" id="11_ik3r1"]
+[ext_resource type="AudioStream" uid="uid://bpcqxqcnk6ig0" path="res://flappy-bird-assets/audio/wing.wav" id="12_6jncg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5u3u2"]
+size = Vector2(361, 63)
+
+[sub_resource type="LabelSettings" id="LabelSettings_kil6w"]
+font = ExtResource("6_kc0c0")
+font_size = 70
+outline_size = 10
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Game" type="Node"]
+script = ExtResource("1_0c1x3")
+
+[node name="BuildBlockers" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[node name="Player" parent="." instance=ExtResource("1_mb3uu")]
+position = Vector2(140, 76)
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+script = ExtResource("2_cirmf")
+
+[node name="ParallaxLayer2" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_mirroring = Vector2(360, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer2"]
+position = Vector2(180, 320)
+scale = Vector2(1.25, 1.25)
+texture = ExtResource("2_g3ju5")
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_mirroring = Vector2(360, 0)
+
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/ParallaxLayer"]
+position = Vector2(180, 586)
+scale = Vector2(1.07143, 0.964285)
+texture = ExtResource("3_4suwq")
+
+[node name="Floor" type="StaticBody2D" parent="." groups=["Blockers"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+position = Vector2(179.5, 564.5)
+shape = SubResource("RectangleShape2D_5u3u2")
+
+[node name="Ceil" type="StaticBody2D" parent="." groups=["Blockers"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ceil"]
+position = Vector2(180, -31)
+shape = SubResource("RectangleShape2D_5u3u2")
+
+[node name="LabelScore" type="Label" parent="."]
+z_index = 1
+anchors_preset = -1
+anchor_left = 0.536
+anchor_right = 0.536
+offset_left = -12.96
+offset_top = 11.0
+offset_right = 12.04
+offset_bottom = 69.0
+text = "0"
+label_settings = SubResource("LabelSettings_kil6w")
+
+[node name="Message" type="Sprite2D" parent="."]
+process_mode = 3
+visible = false
+z_index = 1
+position = Vector2(177, 319)
+texture = ExtResource("7_fq523")
+script = ExtResource("8_3s13p")
+
+[node name="Gameover" type="Sprite2D" parent="Message"]
+process_mode = 3
+visible = false
+position = Vector2(0, -191)
+texture = ExtResource("9_ubj1o")
+
+[node name="FlapAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("12_6jncg")
+
+[node name="ScoreAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("11_ik3r1")
+
+[node name="DieAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_jwc0u")
+
+[connection signal="timeout" from="BuildBlockers" to="." method="_on_build_blockers_timeout"]
